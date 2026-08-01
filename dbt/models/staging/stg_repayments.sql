@@ -30,5 +30,5 @@ select
         else 0
     end as is_defaulted,
     cast(created_at as timestamp) as created_at,
-    current_timestamp() as dbt_loaded_at
+    now() as dbt_loaded_at
 from source_data

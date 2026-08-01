@@ -52,7 +52,7 @@ select
         when r.status = '30_days_late' then 'Low Risk'
         else 'Current'
     end as risk_segment,
-    current_timestamp() as dbt_loaded_at
+    now() as dbt_loaded_at
 from funding f
 left join businesses b on f.business_id = b.business_id
 left join repayments r on f.funding_id = r.funding_id

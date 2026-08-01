@@ -26,5 +26,5 @@ select
     cast(interest_rate as decimal(6, 4)) as interest_rate,
     case when decision = 'approved' then 1 else 0 end as is_approved,
     cast(created_at as timestamp) as created_at,
-    current_timestamp() as dbt_loaded_at
+    now() as dbt_loaded_at
 from source_data
