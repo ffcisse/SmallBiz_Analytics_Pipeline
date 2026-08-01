@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   pipeline:
     build: .
@@ -32,22 +30,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # Optional: Dagster UI
-  dagster_ui:
-    build: .
-    container_name: dagster_ui
-    working_dir: /app
-    volumes:
-      - ./data:/app/data
-      - ./dagster:/app/dagster
-    environment:
-      - PYTHONUNBUFFERED=1
-    command: dagster dev
-    ports:
-      - "3000:3000"
-    depends_on:
-      - pipeline
-
-volumes:
-  data:

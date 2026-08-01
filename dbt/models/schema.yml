@@ -2,7 +2,6 @@ version: 2
 
 sources:
   - name: raw
-    database: main
     schema: main
     tables:
       - name: businesses
