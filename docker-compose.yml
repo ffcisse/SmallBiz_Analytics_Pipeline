@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  pipeline:
+    build: .
+    container_name: funding_pipeline
+    working_dir: /app
+    volumes:
+      - ./data:/app/data
+      - ./dbt:/app/dbt
+      - ./scripts:/app/scripts
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DUCKDB_PATH=/app/data/funding_pipeline.duckdb
+    command: >
+      sh -c "
+        echo 'Generating synthetic data...' &&
+        python scripts/generate_data.py &&
+        echo 'Running dbt models...' &&
+        cd dbt && dbt run --profiles-dir . &&
+        echo 'Running data quality tests...' &&
+        dbt test --profiles-dir . &&
+        echo 'Pipeline complete! Starting Streamlit dashboard...' &&
+        cd .. &&
+        streamlit run streamlit_app/app.py --server.port=8501 --server.address=0.0.0.0
+      "
+    ports:
+      - "8501:8501"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Dagster UI
+  dagster_ui:
+    build: .
+    container_name: dagster_ui
+    working_dir: /app
+    volumes:
+      - ./data:/app/data
+      - ./dagster:/app/dagster
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: dagster dev
+    ports:
+      - "3000:3000"
+    depends_on:
+      - pipeline
+
+volumes:
+  data:

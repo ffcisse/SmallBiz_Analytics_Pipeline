@@ -1,0 +1,118 @@
+version: 2
+
+sources:
+  - name: raw
+    database: main
+    schema: main
+    tables:
+      - name: businesses
+        description: Raw small business data
+        columns:
+          - name: business_id
+            description: Unique business identifier
+            tests:
+              - unique
+              - not_null
+          - name: business_name
+            description: Name of the business
+            tests:
+              - not_null
+          - name: industry
+            description: Industry classification
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - Technology
+                    - Retail
+                    - Healthcare
+                    - Finance
+                    - Manufacturing
+                    - Hospitality
+                    - Education
+                    - Construction
+                    - Real Estate
+                    - Transportation
+          - name: state
+            description: State where business is located
+            tests:
+              - not_null
+          - name: founded_date
+            description: Date business was founded
+          - name: employee_count
+            description: Number of employees
+            tests:
+              - not_null
+          - name: annual_revenue
+            description: Annual revenue in USD
+            tests:
+              - not_null
+          - name: created_at
+            description: Record creation timestamp
+
+      - name: funding_decisions
+        description: Funding application decisions
+        columns:
+          - name: funding_id
+            description: Unique funding decision identifier
+            tests:
+              - unique
+              - not_null
+          - name: business_id
+            description: Reference to business
+            tests:
+              - not_null
+          - name: funding_amount
+            description: Amount of funding requested
+            tests:
+              - not_null
+          - name: decision
+            description: Approval or denial decision
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - approved
+                    - denied
+          - name: decision_date
+            description: Date of funding decision
+            tests:
+              - not_null
+          - name: interest_rate
+            description: Interest rate if approved
+          - name: created_at
+            description: Record creation timestamp
+
+      - name: repayments
+        description: Loan repayment status data
+        columns:
+          - name: repayment_id
+            description: Unique repayment record identifier
+            tests:
+              - unique
+              - not_null
+          - name: funding_id
+            description: Reference to funding decision
+            tests:
+              - not_null
+          - name: business_id
+            description: Reference to business
+            tests:
+              - not_null
+          - name: status
+            description: Current repayment status
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - current
+                    - 30_days_late
+                    - 60_days_late
+                    - 90_days_late
+                    - defaulted
+          - name: last_payment_date
+            description: Date of last payment
+          - name: total_paid
+            description: Total amount paid to date
+          - name: created_at
+            description: Record creation timestamp

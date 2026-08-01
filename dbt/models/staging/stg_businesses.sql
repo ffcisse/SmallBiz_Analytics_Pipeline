@@ -1,0 +1,31 @@
+{{
+    config(
+        materialized='view',
+        schema='staging'
+    )
+}}
+
+with source_data as (
+    select
+        business_id,
+        business_name,
+        industry,
+        state,
+        founded_date,
+        employee_count,
+        annual_revenue,
+        created_at
+    from {{ source('raw', 'businesses') }}
+)
+
+select
+    business_id,
+    business_name,
+    industry,
+    state,
+    cast(founded_date as date) as founded_date,
+    employee_count,
+    annual_revenue,
+    cast(created_at as timestamp) as created_at,
+    current_timestamp() as dbt_loaded_at
+from source_data

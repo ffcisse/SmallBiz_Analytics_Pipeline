@@ -1,0 +1,30 @@
+# Data & SQL
+duckdb==0.10.0
+duckdb-engine==0.10.0
+
+# dbt
+dbt-core==1.7.0
+dbt-duckdb==1.7.0
+
+# Orchestration
+dagster==1.6.0
+dagster-webserver==1.6.0
+dagster-duckdb==0.23.0
+
+# Analytics & Visualization
+streamlit==1.28.0
+pandas==2.1.0
+numpy==1.24.0
+plotly==5.17.0
+
+# Data generation
+faker==20.0.0
+
+# Utilities
+python-dotenv==1.0.0
+pyyaml==6.0
+click==8.1.0
+
+# Testing & Quality
+pytest==7.4.0
+pytest-cov==4.1.0
