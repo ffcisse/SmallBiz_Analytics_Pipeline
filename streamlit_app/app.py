@@ -51,7 +51,7 @@ try:
         sum(case when is_defaulted = 1 then 1 else 0 end) as default_count,
         round(100.0 * sum(case when is_defaulted = 1 then 1 else 0 end) / 
               nullif(sum(case when decision = 'approved' then 1 else 0 end), 0), 1) as default_rate
-    FROM marts.fct_funding_decisions
+    FROM main_marts.fct_funding_decisions
     """
     metrics = run_query(metrics_query).to_dict('records')[0]
     
@@ -78,7 +78,7 @@ try:
         count(*) as total_fundings,
         sum(case when is_defaulted = 1 then 1 else 0 end) as defaults,
         round(100.0 * sum(case when is_defaulted = 1 then 1 else 0 end) / count(*), 2) as default_rate
-    FROM marts.fct_funding_decisions
+    FROM main_marts.fct_funding_decisions
     WHERE decision = 'approved'
     GROUP BY industry
     ORDER BY default_rate DESC
@@ -119,7 +119,7 @@ try:
         count(*) as count,
         round(avg(funding_amount), 0) as avg_funding,
         round(100.0 * sum(case when is_defaulted = 1 then 1 else 0 end) / count(*), 2) as default_rate
-    FROM marts.fct_funding_decisions
+    FROM main_marts.fct_funding_decisions
     WHERE decision = 'approved'
     GROUP BY risk_segment
     ORDER BY default_rate DESC
@@ -145,7 +145,7 @@ try:
         decision_date,
         decision,
         count(*) as count
-    FROM marts.fct_funding_decisions
+    FROM main_marts.fct_funding_decisions
     GROUP BY decision_date, decision
     ORDER BY decision_date
     """
@@ -169,7 +169,7 @@ try:
         count(*) as total_fundings,
         sum(case when decision = 'approved' then 1 else 0 end) as approved,
         round(100.0 * sum(case when is_defaulted = 1 then 1 else 0 end) / count(*), 2) as default_rate
-    FROM marts.fct_funding_decisions
+    FROM main_marts.fct_funding_decisions
     GROUP BY state
     ORDER BY total_fundings DESC
     LIMIT 10
@@ -204,7 +204,7 @@ try:
             interest_rate,
             repayment_status,
             is_defaulted
-        FROM marts.fct_funding_decisions
+        FROM main_marts.fct_funding_decisions
         ORDER BY decision_date DESC
         LIMIT 100
         """
@@ -214,7 +214,7 @@ try:
     with tab2:
         risk_detail_query = """
         SELECT *
-        FROM marts.analytics_default_risk
+        FROM main_marts.analytics_default_risk
         ORDER BY default_rate_pct DESC
         LIMIT 50
         """
