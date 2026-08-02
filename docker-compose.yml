@@ -18,8 +18,10 @@ services:
         cd dbt && dbt run --profiles-dir . &&
         echo 'Running data quality tests...' &&
         dbt test --profiles-dir . &&
-        echo 'Pipeline complete! Starting Streamlit dashboard...' &&
         cd .. &&
+        echo 'Training predictive model...' &&
+        python scripts/train_model.py &&
+        echo 'Pipeline complete! Starting Streamlit dashboard...' &&
         streamlit run streamlit_app/app_v2.py --server.port=8501 --server.address=0.0.0.0
       "
     ports:
