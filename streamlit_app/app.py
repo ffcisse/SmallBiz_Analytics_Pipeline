@@ -17,6 +17,22 @@ st.set_page_config(
     layout="wide"
 )
 
+# Professional styling
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    h1, h2, h3 {
+        font-weight: 600;
+        letter-spacing: -0.5px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Database connection
 @st.cache_resource
 def get_connection():
@@ -36,7 +52,7 @@ def run_query(query: str) -> pd.DataFrame:
     return conn.execute(query).df()
 
 # Page title
-st.title("📊 Small Business Funding Analytics")
+st.title("Small Business Funding Analytics")
 st.markdown("Real-time insights into funding decisions and repayment performance")
 
 # Load data
@@ -71,7 +87,7 @@ try:
     st.divider()
     
     # Default rates by industry
-    st.subheader("📈 Default Rates by Industry")
+    st.subheader("Default Rates by Industry")
     industry_query = """
     SELECT
         industry,
@@ -112,7 +128,7 @@ try:
         st.plotly_chart(fig, use_container_width=True)
     
     # Risk segment analysis
-    st.subheader("🎯 Risk Segment Analysis")
+    st.subheader("Risk Segment Analysis")
     risk_query = """
     SELECT
         risk_segment,
@@ -139,7 +155,7 @@ try:
     st.plotly_chart(fig, use_container_width=True)
     
     # Approval trends
-    st.subheader("📅 Approval Trends")
+    st.subheader("Approval Trends")
     approval_query = """
     SELECT
         decision_date,
@@ -162,7 +178,7 @@ try:
     st.plotly_chart(fig, use_container_width=True)
     
     # State analysis
-    st.subheader("🗺️ Geographic Analysis")
+    st.subheader("Geographic Analysis")
     state_query = """
     SELECT
         state,
@@ -188,7 +204,7 @@ try:
     st.plotly_chart(fig, use_container_width=True)
     
     # Data explorer
-    st.subheader("🔍 Data Explorer")
+    st.subheader("Data Explorer")
     
     tab1, tab2 = st.tabs(["Funding Details", "Risk Breakdown"])
     
