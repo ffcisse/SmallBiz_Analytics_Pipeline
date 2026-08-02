@@ -1,165 +1,134 @@
 # Small Business Funding Data Pipeline
 
-A production-grade data engineering portfolio project demonstrating end-to-end pipelines for real-world applications. This project models small business funding decisions and repayment risk using synthetic data, complete with orchestration, testing, and CI/CD.
+A production-grade data engineering portfolio project demonstrating end-to-end pipelines for real-world applications. This project models small business funding decisions and repayment risk using synthetic data, complete with ML modeling, testing, and CI/CD.
 
 ## Architecture
 
-**Data Flow:** Synthetic funding & repayment data → DuckDB → dbt (staging/marts/tests) → Dagster orchestration → Streamlit analytics dashboard
+**Data Flow:** Synthetic funding & repayment data → DuckDB → dbt (staging/marts/tests) → scikit-learn predictions → Streamlit analytics dashboard
 
-**Stack:** DuckDB, dbt, Dagster, Streamlit, Docker, GitHub Actions, Python
+**Stack:** DuckDB, dbt, Python, scikit-learn, Streamlit, Docker, GitHub Actions, Plotly
 
 ## Key Features
 
 - **Complete pipeline:** Data ingestion through analytics dashboard, not isolated notebooks
-- **Data quality:** Automated dbt tests running on every commit via GitHub Actions
-- **Production practices:** Containerized with Docker, orchestrated with Dagster, version controlled
+- **Data quality:** 21 automated dbt tests running on every commit via GitHub Actions
+- **Production practices:** Containerized with Docker, version controlled, reproducible
 - **Business domain:** Small business funding decisions with real analytical questions
-  - Default rates by industry
-  - Repayment risk by segment
-  - Funding decision patterns
-- **Reproducible:** One-weekend build from scratch; runs locally or in containers
-
-## Project Structure
-
-```
-small-business-funding-pipeline/
-├── data/
-│   ├── raw/                 # Generated synthetic data
-│   └── processed/           # Intermediate processed data
-├── dbt/
-│   ├── models/
-│   │   ├── staging/         # Raw data transformations
-│   │   └── marts/           # Business-ready analytics models
-│   ├── tests/               # dbt data quality tests
-│   ├── dbt_project.yml
-│   └── profiles.yml
-├── dagster/
-│   ├── definitions.py       # Dagster job & asset definitions
-│   └── __init__.py
-├── streamlit_app/
-│   └── app.py               # Streamlit analytics dashboard
-├── scripts/
-│   └── generate_data.py     # Synthetic data generation
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── .github/workflows/
-    └── dbt-test.yml         # CI/CD pipeline
-```
+  - Default rates by industry and segment
+  - Repayment risk classification
+  - Cohort analysis of approval trends over time
+- **Predictive modeling:** Logistic regression classifier predicting funding default probability
+- **Professional dashboard:** 4-tab analytics interface with visualizations and data explorer
+- **Reproducible:** One-weekend build from scratch; runs with single Docker command
 
 ## Quick Start
 
-### Local Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/small-business-funding-pipeline.git
-   cd small-business-funding-pipeline
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Generate synthetic data**
-   ```bash
-   python scripts/generate_data.py
-   ```
-
-5. **Run dbt models**
-   ```bash
-   cd dbt
-   dbt run
-   dbt test
-   ```
-
-6. **Start Dagster UI** (optional)
-   ```bash
-   dagster dev
-   ```
-
-7. **Run Streamlit dashboard**
-   ```bash
-   streamlit run streamlit_app/app.py
-   ```
-
-### Docker Setup
+### Docker (Recommended)
 
 ```bash
-docker compose up
+git clone https://github.com/ffcisse/SmallBiz_Analytics_Pipeline.git
+cd SmallBiz_Analytics_Pipeline
+docker compose up --build
 ```
 
-This runs:
-- DuckDB database
-- dbt models
-- Dagster orchestration
-- Streamlit dashboard (accessible at http://localhost:8501)
+Open **http://localhost:8501**
+
+### Local Setup
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python scripts/generate_data.py
+cd dbt && dbt run --profiles-dir . && dbt test --profiles-dir .
+cd .. && python scripts/train_model.py
+streamlit run streamlit_app/app_v2.py
+```
 
 ## Data Model
 
-### Businesses
-- Business ID, industry, founding date, employee count
-- Location (state)
+- **500 businesses** with industry, location, employee count, annual revenue
+- **800 funding decisions** with approval, amounts, interest rates
+- **564 repayments** with status tracking (current/late/defaulted)
 
-### Funding Decisions
-- Funding ID, business ID, funding amount, decision (approved/denied)
-- Decision date, decision factors
+### dbt Transformations
 
-### Repayment Status
-- Repayment ID, funding ID, repayment date
-- Status (current, 30/60/90+ days late, defaulted)
+**Staging:** 3 views cleaning and standardizing raw data
+**Marts:** 3 tables for analytics (fact table, default rates, cohort analysis)
 
-## dbt Models
+## Machine Learning
 
-### Staging Layer (`staging/`)
-- `stg_businesses.sql` – Cleansed business data
-- `stg_funding_decisions.sql` – Cleansed funding applications
-- `stg_repayments.sql` – Cleansed repayment records
+**Default Risk Classifier**
+- Model: Logistic Regression (scikit-learn)
+- Features: 10 engineered features (funding amount, employee count, revenue ratios, log transforms)
+- Training: 80-20 split with StandardScaler normalization
+- Output: Default probability predictions for 564+ approved fundings
 
-### Mart Layer (`marts/`)
-- `fct_funding_decisions.sql` – Fact table for funding events
-- `dim_businesses.sql` – Dimension table for business attributes
-- `analytics_default_risk.sql` – Analytics: default rates by segment
+## Dashboard (4 Tabs)
 
-## Testing
+1. **Overview** — Key metrics, industry analysis, risk segments, approval trends, geographic breakdown
+2. **Predictive Model** — Model performance, default risk distribution, high-risk fundings, accuracy by industry
+3. **Cohort Analysis** — Approval/default rate trends over time by industry, funding volume trends
+4. **Data Explorer** — Detailed funding records, risk breakdown, model predictions
 
-Run dbt tests:
+## Data Quality
+
+21 automated dbt tests covering uniqueness, not-null constraints, accepted values, referential integrity
+
+**CI/CD:** GitHub Actions runs all tests on every push to main
+
+## Technologies
+
+- **Database:** DuckDB
+- **Transformations:** dbt 1.7
+- **ML/Feature Engineering:** scikit-learn, Python
+- **Analytics & Visualization:** Streamlit, Plotly
+- **Containerization:** Docker, Docker Compose
+- **Version Control & CI/CD:** GitHub, GitHub Actions
+
+## Development
+
+### Add New dbt Models
 ```bash
 cd dbt
-dbt test
+dbt run --profiles-dir .
+dbt test --profiles-dir .
 ```
 
-Run Python tests:
+### Modify Dashboard
+Edit `streamlit_app/app_v2.py` — auto-reloads on save
+
+### Generate New Data
+Edit `scripts/generate_data.py` and run:
 ```bash
-pytest
+python scripts/generate_data.py
 ```
 
-## CI/CD
+## Deployment
 
-GitHub Actions workflow (`.github/workflows/dbt-test.yml`) runs on every push:
-- Installs dependencies
-- Generates data
-- Runs dbt tests
-- Reports test results
+### Heroku
+```bash
+echo "web: streamlit run streamlit_app/app_v2.py" > Procfile
+git push heroku main
+```
 
-## Next Steps
+## Portfolio Value
 
-- [ ] Generate synthetic data (`scripts/generate_data.py`)
-- [ ] Build dbt staging models
-- [ ] Build dbt mart models
-- [ ] Add dbt tests
-- [ ] Create Dagster jobs
-- [ ] Build Streamlit dashboard
-- [ ] Dockerize everything
-- [ ] Set up GitHub Actions
+Demonstrates:
+- Data Engineering: Full pipeline with dbt data modeling
+- Software Engineering: Testing, CI/CD, version control, Docker
+- Machine Learning: Feature engineering, model training, predictions
+- Analytics: Dashboard design, cohort analysis, business insights
+- Production Practices: Reproducible, scalable, testable code
 
-## Built By
+## Author
 
-A weekend portfolio project demonstrating real data engineering skills for data analyst, data scientist, and ML engineering roles.
+Built by Farah Cisse (UC Berkeley, Data Science & Bioengineering)
+
+- GitHub: [@ffcisse](https://github.com/ffcisse)
+- LinkedIn: [farah-cisse](https://www.linkedin.com/in/farah-cisse)
+- Email: ffcisse@berkeley.edu
+
+## License
+
+Open source — freely available for learning and portfolio purposes
